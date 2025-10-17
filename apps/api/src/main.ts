@@ -11,8 +11,24 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+  // Configure CORS to allow Vercel and local dev with credentials (cookies)
+  const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
   app.enableCors({
-    origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Allow server-to-server (no origin) and local tools
+      if (!origin) return callback(null, true);
+      try {
+        const allowed = [frontendOrigin, 'http://localhost:3000', 'https://localhost:3000'];
+        const hostname = new URL(origin).hostname;
+        const isVercel = hostname.endsWith('.vercel.app');
+        if (allowed.includes(origin) || isVercel) {
+          return callback(null, true);
+        }
+      } catch (_) {
+        // fallthrough to deny
+      }
+      return callback(new Error('Not allowed by CORS'), false);
+    },
     credentials: true,
   });
 
