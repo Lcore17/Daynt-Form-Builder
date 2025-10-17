@@ -13,7 +13,10 @@ import { Request } from 'express';
 import { FileFilterCallback } from 'multer';
 
 export const imageFileFilter = (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
-  if (!file.mimetype.match(/\/image\//)) return cb(new Error('Only image files are allowed!'), false);
+  if (!file.mimetype.match(/\/image\//)) {
+    // FileFilterCallback expects (error: Error | null, accept: boolean)
+    return cb(null, false);
+  }
   cb(null, true);
 };
 
