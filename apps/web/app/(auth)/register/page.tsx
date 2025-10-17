@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Lock, Mail, User, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { API_BASE } from '../../../lib/api';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -16,7 +17,7 @@ export default function RegisterPage() {
     setLoading(true);
     
     try {
-      const res = await fetch('http://localhost:4000/api/auth/register', { 
+      const res = await fetch(`${API_BASE}/auth/register`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ name, email, password }) 
