@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
 import { existsSync, mkdirSync } from 'fs';
 
@@ -29,6 +29,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.PORT || 4000);
+  const port = Number(process.env.PORT) || 4000;
+  await app.listen(port);
+  const origin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
+  Logger.log(`API listening on :${port} (CORS origin: ${origin})`, 'Bootstrap');
 }
 bootstrap();
