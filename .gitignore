@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+dist/
+.next/
+uploads/
+apps/api/dev.db
+coverage/
+tmp/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.DS_Store
+.vscode/

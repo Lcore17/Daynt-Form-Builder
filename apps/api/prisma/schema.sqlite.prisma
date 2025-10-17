@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  forms     Form[]
+}
+
+model Form {
+  id          String    @id @default(cuid())
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id])
+  title       String
+  description String?
+  isPublic    Boolean   @default(false)
+  publicId    String    @unique @default(cuid())
+  fields      Field[]
+  submissions Submission[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Field {
+  id        String   @id @default(cuid())
+  formId    String
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  label     String
+  type      String
+  required  Boolean  @default(false)
+  order     Int
+  options   String?
+  // validation rules
+  minLength Int?
+  maxLength Int?
+  minValue  Int?
+  maxValue  Int?
+  answers   SubmissionAnswer[]
+}
+
+model Submission {
+  id        String              @id @default(cuid())
+  formId    String
+  form      Form                @relation(fields: [formId], references: [id], onDelete: Cascade)
+  createdAt DateTime            @default(now())
+  answers   SubmissionAnswer[]
+}
+
+model SubmissionAnswer {
+  id           String   @id @default(cuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  fieldId      String
+  field        Field     @relation(fields: [fieldId], references: [id])
+  value        String?
+  filePath     String?
+}
+
+
