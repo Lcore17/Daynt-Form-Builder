@@ -9,7 +9,10 @@ export function ensureUploadDir() {
   return dir;
 }
 
-export const imageFileFilter = (_req: any, file: Express.Multer.File, cb: Function) => {
+import { Request } from 'express';
+import { FileFilterCallback } from 'multer';
+
+export const imageFileFilter = (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
   if (!file.mimetype.match(/\/image\//)) return cb(new Error('Only image files are allowed!'), false);
   cb(null, true);
 };
@@ -18,7 +21,7 @@ export function diskStorageConfig() {
   const destination = ensureUploadDir();
   return diskStorage({
     destination,
-    filename: (_req, file, cb) => {
+  filename: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
       const unique = nanoid(12);
       cb(null, `${unique}${extname(file.originalname)}`);
     },
