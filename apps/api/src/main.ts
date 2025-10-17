@@ -12,23 +12,10 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
   // Configure CORS to allow Vercel and local dev with credentials (cookies)
+  const vercelOrigin = 'https://daynt-form-builder-web.vercel.app';
   const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
   app.enableCors({
-    origin: (origin, callback) => {
-      // Allow server-to-server (no origin) and local tools
-      if (!origin) return callback(null, true);
-      try {
-        const allowed = [frontendOrigin, 'http://localhost:3000', 'https://localhost:3000'];
-        const hostname = new URL(origin).hostname;
-        const isVercel = hostname.endsWith('.vercel.app');
-        if (allowed.includes(origin) || isVercel) {
-          return callback(null, true);
-        }
-      } catch (_) {
-        // fallthrough to deny
-      }
-      return callback(new Error('Not allowed by CORS'), false);
-    },
+    origin: [frontendOrigin, vercelOrigin, 'http://localhost:3000', 'https://localhost:3000'],
     credentials: true,
   });
 
