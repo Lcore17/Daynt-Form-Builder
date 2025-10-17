@@ -149,16 +149,8 @@ NODE_ENV
 ```
 production
 ```
-
-#### 5. PORT
-**Key:**
-```
-PORT
-```
-**Value:**
-```
-4000
-```
+ 
+💡 Do NOT set a PORT value on Render. Render automatically provides a dynamic PORT via environment variable and your app already listens to it with `process.env.PORT`.
 
 ### Step 5: Deploy Backend
 
@@ -381,6 +373,17 @@ Before sharing publicly:
 2. Visit `https://your-api.onrender.com/api/docs` - if it loads, API is working
 3. Check Render logs for errors: Dashboard → Service → Logs
 4. Wait 60 seconds if on free tier (wake from sleep)
+
+### Problem: "Not Found" on `/api/health` or `/api/docs`
+
+**Likely cause:** The service is not listening on the port Render assigned, often because a static PORT was set.
+
+**Solution:**
+1. Go to Render → Your Service → Environment → remove any `PORT` variable you added.
+2. Save to trigger redeploy.
+3. Ensure the app uses `process.env.PORT` (this project already does).
+4. After deploy, check logs for route mappings like `Mapped {/api/health, GET}`.
+5. Retry `https://<your-service>.onrender.com/api/health`.
 
 ### Problem: "CORS Error" in browser console
 

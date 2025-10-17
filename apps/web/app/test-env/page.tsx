@@ -14,6 +14,7 @@ export default function TestEnv() {
       const response = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email: 'test', password: 'test' })
       });
       
@@ -32,7 +33,8 @@ export default function TestEnv() {
   };
   
   const envValue = process.env.NEXT_PUBLIC_API_BASE;
-  const isCorrect = envValue === '/api' || envValue === 'https://daynt-form-api.onrender.com/api';
+  const expected = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:4000/api';
+  const isCorrect = (envValue || '/api') === (process.env.NODE_ENV === 'production' ? '/api' : 'https://daynt-form-api.onrender.com/api');
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
@@ -60,10 +62,9 @@ export default function TestEnv() {
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Expected (with rewrite):</p>
             <code className="block bg-green-100 dark:bg-green-900 p-3 rounded text-sm break-all">
               /api
+              <br />
+              <span className="text-xs opacity-70">(Or full URL: https://daynt-form-api.onrender.com/api if not using rewrites)</span>
             </code>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              (Or full URL: https://daynt-form-api.onrender.com/api if not using rewrites)
-            </p>
           </div>
           
           <div className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'}`}>
@@ -103,24 +104,20 @@ export default function TestEnv() {
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
               <h3 className="font-bold mb-2">📝 How to Fix:</h3>
               <ol className="text-sm space-y-2 list-decimal list-inside">
+                <li>Option A (Recommended): use rewrites: no env needed. API will be proxied via /api</li>
+                <li>Option B: Set NEXT_PUBLIC_API_BASE</li>
                 <li>Go to <strong>Vercel Dashboard</strong></li>
                 <li>Click on your <strong>project</strong></li>
                 <li>Go to <strong>Settings</strong> → <strong>Environment Variables</strong></li>
-                <li>Find <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded">NEXT_PUBLIC_API_BASE</code></li>
-                <li>Click <strong>"Edit"</strong> or <strong>"Add New"</strong></li>
-                <li>Change Value to: <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded">/api</code></li>
+                <li>Click <strong>"Add New"</strong> or edit existing</li>
+                <li>Key: <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded">NEXT_PUBLIC_API_BASE</code></li>
+                <li>Value: <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded">https://daynt-form-api.onrender.com/api</code></li>
                 <li>Select all environments (Production, Preview, Development)</li>
                 <li>Click <strong>"Save"</strong></li>
-                <li>Go to <strong>Deployments</strong> → Click latest → ⋯ → <strong>"Redeploy"</strong></li>
+                <li>Go to <strong>Deployments</strong> → Click ⋯ → <strong>"Redeploy"</strong></li>
                 <li>Uncheck <strong>"Use existing Build Cache"</strong></li>
                 <li>Wait 2-3 minutes, then refresh this page</li>
               </ol>
-              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
-                <p className="text-xs text-blue-800 dark:text-blue-200">
-                  <strong>💡 Why /api?</strong> We added a rewrite in next.config.js that proxies /api/* to your Render backend. 
-                  This makes cookies work as first-party cookies, fixing cross-origin auth issues!
-                </p>
-              </div>
             </div>
           )}
         </div>

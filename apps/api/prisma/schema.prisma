@@ -29,22 +29,6 @@ model Form {
   submissions Submission[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  // New Features
-  template    String?   // Template type: feedback, registration, survey, contact
-  brandColor  String?   // Custom accent color (hex)
-  brandLogo   String?   // Logo URL/path
-  startDate   DateTime? // Form scheduling - when form opens
-  endDate     DateTime? // Form scheduling - when form closes
-  maxSubmissions Int?   // Submission limit
-  submissionCount Int   @default(0) // Current submission count
-  thankYouMessage String? // Custom thank you message
-  redirectUrl String?   // Redirect after submission
-  language    String    @default("en") // Multi-language support
-  webhookUrl  String?   // Webhook integration
-  enableCaptcha Boolean @default(false) // Spam protection
-  viewCount   Int       @default(0) // Analytics
-  conversionRate Float? // Analytics
-  avgCompletionTime Int? // Analytics (in seconds)
 }
 
 model Field {
@@ -52,21 +36,15 @@ model Field {
   formId    String
   form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
   label     String
-  type      String
+  type      FieldType
   required  Boolean  @default(false)
   order     Int
-  options   String?
+  options   String[] @db.Text
   // validation rules
   minLength Int?
   maxLength Int?
   minValue  Int?
   maxValue  Int?
-  pattern   String?  // Regex pattern for validation
-  // Conditional logic
-  conditionalFieldId String? // Field ID to check
-  conditionalValue   String? // Value to match
-  conditionalOperator String? // eq, neq, contains, gt, lt
-  showWhenMatch Boolean @default(true) // Show when condition matches
   answers   SubmissionAnswer[]
 }
 
@@ -76,9 +54,6 @@ model Submission {
   form      Form                @relation(fields: [formId], references: [id], onDelete: Cascade)
   createdAt DateTime            @default(now())
   answers   SubmissionAnswer[]
-  isDraft   Boolean             @default(false) // Save as draft feature
-  completionTime Int?            // Time taken to complete (seconds)
-  ipAddress String?             // For analytics
 }
 
 model SubmissionAnswer {
@@ -87,8 +62,15 @@ model SubmissionAnswer {
   submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   fieldId      String
   field        Field     @relation(fields: [fieldId], references: [id])
-  value        String?
+  value        Json?
   filePath     String?
 }
 
-
+enum FieldType {
+  TEXT
+  NUMBER
+  TEXTAREA
+  CHECKBOX
+  RADIO
+  IMAGE
+}
