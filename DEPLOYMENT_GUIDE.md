@@ -1,7 +1,7 @@
 # Deployment Guide
 
 This guide will help you deploy the Daynt Form Builder to production. We'll deploy:
-- **Backend (API)** → Railway or Render
+- **Backend (API)** → Render
 - **Frontend (Web)** → Vercel
 
 ---
@@ -9,85 +9,13 @@ This guide will help you deploy the Daynt Form Builder to production. We'll depl
 ## Prerequisites
 
 - GitHub account with your code pushed
-- Railway/Render account (for backend)
+- Render account (for backend)
 - Vercel account (for frontend)
 - PostgreSQL database (recommended for production)
 
 ---
 
-## Part 1: Deploy Backend (API) to Railway
-
-### Step 1: Sign up for Railway
-1. Go to [railway.app](https://railway.app)
-2. Click "Login" and sign in with GitHub
-3. Authorize Railway to access your repositories
-
-### Step 2: Create New Project
-1. Click "New Project"
-2. Select "Deploy from GitHub repo"
-3. Choose `Lcore17/Daynt-Form-Builder`
-4. Railway will detect your repo
-
-### Step 3: Configure the Service
-1. After the project is created, click on the service
-2. Go to **Settings** tab
-3. Configure the following:
-
-**Root Directory:**
-```
-apps/api
-```
-
-**Build Command:**
-```
-npm install --omit=dev && npm run prisma:deploy && npm run build
-```
-
-**Start Command:**
-```
-npm run start:prod
-```
-
-**Watch Paths:** (optional, for auto-redeploy)
-```
-apps/api/**
-```
-
-### Step 4: Add PostgreSQL Database
-1. In your Railway project, click "New"
-2. Select "Database" → "PostgreSQL"
-3. Railway will provision a database
-4. Copy the `DATABASE_URL` from the database service
-
-### Step 5: Set Environment Variables
-In your API service, go to **Variables** tab and add:
-
-```bash
-DATABASE_URL=postgresql://postgres:password@host:port/railway?schema=public
-# ☝️ Copy this from your Railway PostgreSQL service
-
-JWT_SECRET=your-super-secret-jwt-key-minimum-64-characters-long-random-string
-# ☝️ Generate a secure random string (64+ characters)
-
-FRONTEND_ORIGIN=https://your-app.vercel.app
-# ☝️ You'll update this after deploying the frontend
-
-PORT=${{PORT}}
-# ☝️ Railway automatically provides this
-
-NODE_ENV=production
-```
-
-### Step 6: Deploy
-1. Click "Deploy" or trigger deployment
-2. Wait for build to complete (2-5 minutes)
-3. Once deployed, copy your API URL (looks like: `https://your-app.up.railway.app`)
-
-### Step 7: Verify API is Running
-Visit: `https://your-app.up.railway.app/api/docs`
-- You should see the Swagger API documentation
-
----
+// ...existing code...
 
 ## Part 2: Deploy Frontend (Web) to Vercel
 
@@ -227,7 +155,7 @@ Visit your frontend: `https://your-app.vercel.app`
 4. **Check responses** in the dashboard
 
 ### 3. Monitor Logs
-- **Railway:** Project → Service → Deployments tab → View Logs
+// ...existing code...
 - **Render:** Dashboard → Your Service → Logs
 - **Vercel:** Project → Deployments → View Function Logs
 
@@ -241,7 +169,7 @@ Visit your frontend: `https://your-app.vercel.app`
 | `DATABASE_URL` | ✅ Yes | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
 | `JWT_SECRET` | ✅ Yes | Secret for JWT tokens (64+ chars) | `your-random-64-char-string` |
 | `FRONTEND_ORIGIN` | ✅ Yes | Frontend URL for CORS | `https://your-app.vercel.app` |
-| `PORT` | No | Server port (auto-set by host) | `4000` |
+| `PORT` | No | Server port | `4000` |
 | `NODE_ENV` | No | Environment | `production` |
 
 ### Frontend (Web)
@@ -253,25 +181,7 @@ Visit your frontend: `https://your-app.vercel.app`
 
 ## Troubleshooting
 
-### Backend Issues
-
-**Build fails with Prisma error:**
-```bash
-# Make sure DATABASE_URL is set correctly
-# Check if the database is accessible from the service
-```
-
-**CORS errors in browser:**
-```bash
-# Update FRONTEND_ORIGIN to match your Vercel URL exactly
-# Include the protocol (https://) and no trailing slash
-```
-
-**Port binding error:**
-```bash
-# Make sure you're using process.env.PORT in main.ts
-# Railway/Render automatically assign the port
-```
+// ...existing code...
 
 ### Frontend Issues
 
@@ -305,34 +215,7 @@ Visit your frontend: `https://your-app.vercel.app`
 
 ---
 
-## Quick Commands Reference
-
-### Generate JWT Secret (64 characters)
-```bash
-# On Linux/Mac:
-openssl rand -base64 48
-
-# On Windows PowerShell:
-[Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 }))
-
-# Or use online: https://generate-secret.vercel.app/64
-```
-
-### Test API Endpoint
-```bash
-curl https://your-api-url/api/docs
-```
-
-### Check Deployment Status
-```bash
-# Railway CLI
-railway status
-
-# Render (view in dashboard)
-
-# Vercel CLI
-vercel ls
-```
+// ...existing code...
 
 ---
 
@@ -342,7 +225,7 @@ vercel ls
 1. **Enable caching** for static assets
 2. **Use connection pooling** for database
 3. **Add rate limiting** (already configured with Throttler)
-4. **Monitor memory usage** in Railway/Render dashboard
+4. **Monitor memory usage** in Render dashboard
 
 ### Frontend
 1. **Enable Vercel Analytics** (free tier available)
@@ -353,7 +236,7 @@ vercel ls
 ### Database
 1. **Add indexes** to frequently queried fields
 2. **Enable connection pooling** (Prisma Data Proxy or PgBouncer)
-3. **Regular backups** (automated on Railway/Render)
+3. **Regular backups** (automated on Render)
 
 ---
 
@@ -380,11 +263,6 @@ vercel ls
 
 ### Scaling Options
 
-**Railway:**
-- Upgrade to Pro plan for better resources
-- Add replicas for high availability
-- Use Railway's automatic scaling
-
 **Render:**
 - Upgrade instance type (Starter → Standard → Pro)
 - Add autoscaling rules
@@ -400,21 +278,19 @@ vercel ls
 ## Cost Estimates
 
 ### Free Tier (Good for testing/demos)
-- **Railway:** $5/month credit (includes PostgreSQL)
 - **Render:** Free tier available (spins down after inactivity)
 - **Vercel:** Free (100GB bandwidth, unlimited deployments)
 
 ### Production Tier
-- **Railway:** ~$5-20/month (depending on usage)
 - **Render:** ~$7-25/month (Starter plan)
 - **Vercel:** Free or Pro ($20/month for teams)
-- **Total:** ~$12-45/month for small to medium traffic
+- **Total:** ~$7-45/month for small to medium traffic
 
 ---
 
 ## Next Steps
 
-1. ✅ Deploy backend to Railway/Render
+1. ✅ Deploy backend to Render
 2. ✅ Deploy frontend to Vercel
 3. ✅ Configure environment variables
 4. ✅ Test the application

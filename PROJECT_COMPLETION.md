@@ -192,7 +192,7 @@ This project demonstrates:
 - ✅ Build command: `npm run build`
 - ✅ shadcn/ui components work in production
 
-### Backend (Heroku/Railway)
+-### Backend (Render)
 - ✅ PostgreSQL ready
 - ✅ Migrations documented
 - ✅ Environment variables configured
