@@ -34,7 +34,7 @@ export default function TestEnv() {
   
   const envValue = process.env.NEXT_PUBLIC_API_BASE;
   const expected = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:4000/api';
-  const isCorrect = (envValue || '/api') === (process.env.NODE_ENV === 'production' ? '/api' : 'https://daynt-form-api.onrender.com/api');
+  const isCorrect = (envValue || '/api') === expected;
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
@@ -63,7 +63,7 @@ export default function TestEnv() {
             <code className="block bg-green-100 dark:bg-green-900 p-3 rounded text-sm break-all">
               /api
               <br />
-              <span className="text-xs opacity-70">(Or full URL: https://daynt-form-api.onrender.com/api if not using rewrites)</span>
+              <span className="text-xs opacity-70">(Or full URL: https://daynt-form-builder.onrender.com/api if not using rewrites)</span>
             </code>
           </div>
           
