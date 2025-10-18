@@ -12,18 +12,32 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
   // Configure CORS to allow Vercel and local dev with credentials (cookies)
-  const vercelOrigin = process.env.FRONTEND_ORIGIN || 'https://daynt-form-builder-web.vercel.app';
-  const allowedOrigins = [vercelOrigin, 'http://localhost:3000', 'https://localhost:3000'];
+  const vercelOrigin = 'https://daynt-form-builder-web.vercel.app';
+  const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
   app.enableCors({
+    // Allow explicit origins and Vercel preview subdomains
     origin: (origin, callback) => {
-      // Allow non-browser requests (like curl, Postman) with no origin
+      const staticAllowed = new Set([
+        frontendOrigin,
+        vercelOrigin,
+        'http://localhost:3000',
+        'https://localhost:3000',
+      ]);
+      // Server-to-server or same-origin calls (no Origin header)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error('CORS blocked for origin: ' + origin), false);
+      try {
+        const { hostname } = new URL(origin);
+        const isVercelPreview = /\.vercel\.app$/i.test(hostname);
+        if (staticAllowed.has(origin) || isVercelPreview) return callback(null, true);
+      } catch (_) {
+        // fall through: treat as not allowed
+      }
+      return callback(null, false);
     },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
   });
 
   const uploadDir = process.env.UPLOAD_DIR || 'uploads';
