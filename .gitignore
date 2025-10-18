@@ -5,6 +5,7 @@ dist/
 .next/
 uploads/
 apps/api/dev.db
+apps/api/prisma/dev.db
 coverage/
 tmp/
 pnpm-lock.yaml
