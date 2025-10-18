@@ -14,31 +14,25 @@ async function bootstrap() {
   // Configure CORS to allow Vercel and local dev with credentials (cookies)
   const vercelOrigin = 'https://daynt-form-builder-web.vercel.app';
   const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
-  app.enableCors({
-    // Allow explicit origins and Vercel preview subdomains
-    origin: (origin, callback) => {
-      const staticAllowed = new Set([
-        frontendOrigin,
-        vercelOrigin,
-        'http://localhost:3000',
-        'https://localhost:3000',
-      ]);
-      // Server-to-server or same-origin calls (no Origin header)
-      if (!origin) return callback(null, true);
-      try {
-        const { hostname } = new URL(origin);
-        const isVercelPreview = /\.vercel\.app$/i.test(hostname);
-        if (staticAllowed.has(origin) || isVercelPreview) return callback(null, true);
-      } catch (_) {
-        // fall through: treat as not allowed
-      }
-      return callback(null, false);
-    },
-    credentials: true,
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    optionsSuccessStatus: 204,
-  });
+        app.enableCors({
+          origin: (origin, callback) => {
+            // Allow Vercel, local dev, and server-to-server
+            if (!origin) return callback(null, true);
+            try {
+              const allowed = [frontendOrigin, 'http://localhost:3000', 'https://localhost:3000'];
+              const hostname = new URL(origin).hostname;
+              const isVercel = hostname.endsWith('.vercel.app');
+              if (allowed.includes(origin) || isVercel) {
+                return callback(null, true);
+              }
+            } catch (_) {}
+            return callback(new Error('Not allowed by CORS'), false);
+          },
+          credentials: true,
+          methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+          allowedHeaders: ['Content-Type', 'Authorization'],
+          optionsSuccessStatus: 204,
+        });
 
   const uploadDir = process.env.UPLOAD_DIR || 'uploads';
   if (!existsSync(uploadDir)) mkdirSync(uploadDir, { recursive: true });

@@ -19,13 +19,13 @@ export class AuthController {
     const { token, user } = await this.auth.login(body.email, body.password);
     const isProd = process.env.NODE_ENV === 'production';
     // In production on HTTPS (Render), cookies must be SameSite=None and Secure for cross-site
-    res.cookie(process.env.COOKIE_NAME || 'auth', token, {
-      httpOnly: true,
-      secure: isProd, // Render uses HTTPS; set true in production
-      sameSite: isProd ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/',
-    });
+        res.cookie(process.env.COOKIE_NAME || 'auth', token, {
+          httpOnly: true,
+          secure: isProd, // Render uses HTTPS; set true in production
+          sameSite: isProd ? 'none' : 'lax',
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          path: '/',
+        });
     return { user };
   }
 
