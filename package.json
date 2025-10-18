@@ -9,11 +9,11 @@
   "scripts": {
     "dev": "concurrently -n api,web -c blue,green \"npm:dev -w apps/api\" \"npm:dev -w apps/web\"",
     "build": "npm run -w apps/api build && npm run -w apps/web build",
-    "build:api": "npm --prefix apps/api run build",
+    "build:api": "cd apps/api && npx nest build",
     "start": "concurrently -n api,web -c blue,green \"npm:start:prod -w apps/api\" \"npm:start -w apps/web\"",
-    "start:api": "npm --prefix apps/api run start:prod",
-    "prisma:generate": "npm --prefix apps/api run prisma:generate",
-    "prisma:deploy": "npm --prefix apps/api run prisma:deploy",
+    "start:api": "node apps/api/dist/src/main.js",
+    "prisma:generate": "cd apps/api && npx prisma generate",
+    "prisma:deploy": "cd apps/api && npx prisma migrate deploy",
     "lint": "echo 'lint placeholder'",
     "format": "echo 'format placeholder'"
   },
