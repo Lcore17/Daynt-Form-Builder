@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
+import { LoginDto, RegisterDto } from './dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -10,12 +11,12 @@ export class AuthController {
   constructor(private auth: AuthService, private jwt: JwtService) {}
 
   @Post('register')
-  async register(@Body() body: { email: string; password: string; name: string }) {
+  async register(@Body() body: RegisterDto) {
     return this.auth.register(body.email, body.password, body.name);
   }
 
   @Post('login')
-  async login(@Body() body: { email: string; password: string }, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
     const { token, user } = await this.auth.login(body.email, body.password);
     const isProd = process.env.NODE_ENV === 'production';
     // In production on HTTPS (Render), cookies must be SameSite=None and Secure for cross-site
