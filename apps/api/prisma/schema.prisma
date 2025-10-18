@@ -61,7 +61,7 @@ model SubmissionAnswer {
   submissionId String
   submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   fieldId      String
-  field        Field     @relation(fields: [fieldId], references: [id])
+  field        Field     @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   value        String?
   filePath     String?
 }
